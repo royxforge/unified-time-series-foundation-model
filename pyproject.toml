@@ -1,0 +1,166 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "uniftsm"
+version = "0.1.0"
+description = "Unified Time Series Foundation Model Toolkit: 5 TSFMs, 1 API"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Sourav Roy"},
+]
+
+keywords = [
+    "time-series", "forecasting", "foundation-models",
+    "chronos", "timesfm", "moirai", "lag-llama", "tinytimemixers",
+    "machine-learning", "deep-learning",
+]
+
+dynamic = []
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    "numpy>=1.26.0",
+    "pandas>=2.1.0",
+    "torch>=2.1.0",
+    "scipy>=1.11.0",
+    "scikit-learn>=1.3.0",
+    "statsmodels>=0.14.0",
+    "transformers>=4.36.0",
+    "accelerate>=0.25.0",
+    "safetensors>=0.4.0",
+    "pyarrow>=14.0.0",
+    "tqdm>=4.66.0",
+    "pydantic>=2.5.0",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "rich>=13.7.0",
+    "click>=8.1.0",
+    "httpx>=0.26.0",
+    "pydantic-settings>=2.1.0",
+    "joblib>=1.3.0",
+    "xgboost>=2.0.0",
+    "datasets>=2.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-benchmark>=4.0.0",
+    "hypothesis>=6.0.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0",
+    "black>=23.12.0",
+    "pre-commit>=3.6.0",
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autodoc-typehints>=1.25.0",
+    "nbsphinx>=0.9.0",
+    "jupyter>=1.0.0",
+]
+
+chronos = [
+    "chronos-forecasting>=1.0.0",
+]
+
+timesfm = [
+    "timesfm>=1.0.0",
+]
+
+moirai = [
+    "uni2ts>=1.0.0",
+]
+
+lag_llama = [
+    "lag-llama @ git+https://github.com/time-series-foundation-models/lag-llama.git",
+]
+
+ttm = [
+    "granite-tsfm>=0.1.0",
+]
+
+all = [
+    "uniftsm[chronos,timesfm,moirai,lag_llama,ttm]",
+]
+
+[project.urls]
+Homepage = "https://github.com/royxforge/uniftsm"
+Repository = "https://github.com/royxforge/uniftsm"
+Documentation = "https://uniftsm.readthedocs.io"
+
+[project.scripts]
+uniftsm = "uniftsm.cli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["uniftsm*"]
+
+[tool.black]
+line-length = 99
+target-version = ["py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+(
+  /venv_311/
+  /docs/_build/
+  /\.hypothesis/
+)
+'''
+
+[tool.ruff]
+target-version = "py311"
+line-length = 99
+src = ["uniftsm", "tests", "benchmarks"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501", # line length handled by black / ruff format
+    "B008", # function calls in default arguments (click usage)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["uniftsm"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_optional = true
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "uniftsm.cli.*",
+    "uniftsm.visualization.*",
+    "uniftsm.datasets.*",
+]
+disable_error_code = ["import-untyped"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

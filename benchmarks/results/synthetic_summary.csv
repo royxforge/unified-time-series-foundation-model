@@ -1,0 +1,4 @@
+model,MASE,sMAPE,CRPS,time_seconds
+naive,4.957,50.7027,1.0212,0.0018
+seasonal_naive,5.4425,30.5506,0.9822,0.0016
+theta,4.9426,67.0194,1.4694,0.0014

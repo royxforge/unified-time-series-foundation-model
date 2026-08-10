@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use UniTSFM in your research, please cite it as below."
+title: "UniTSFM: A Unified Toolkit and Empirical Study of Time Series Foundation Models"
+authors:
+  - family-names: Roy
+    given-names: Sourav
+date-released: 2026-07-24
+version: 0.1.0
+repository-code: "https://github.com/royxforge/uniftsm"
+license: MIT
+preferred-citation:
+  type: software
+  authors:
+    - family-names: Roy
+      given-names: Sourav
+  title: "UniTSFM: A Unified Toolkit and Empirical Study of Time Series Foundation Models"
+  version: 0.1.0
+  year: 2026

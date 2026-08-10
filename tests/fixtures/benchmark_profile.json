@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "description": "Precomputed model performance profiles for testing BenchmarkDB. Do not modify.",
+    "seed": 42,
+    "n_series": 20,
+    "generator": "tests/fixtures/generate_fixtures.py"
+  },
+  "profiles": [
+    {
+      "series_id": "linear_trend_001",
+      "length": 200,
+      "frequency": "D",
+      "seasonal_strength": 0.05,
+      "trend_strength": 0.85,
+      "noise_level": 0.10,
+      "best_model": "theta",
+      "model_scores": {
+        "chronos": 0.72,
+        "timesfm": 0.78,
+        "moirai": 0.65,
+        "lag_llama": 0.70,
+        "ttm": 0.68
+      },
+      "metrics": {
+        "chronos": {"MASE": 0.85, "sMAPE": 1.45},
+        "timesfm": {"MASE": 0.72, "sMAPE": 1.22},
+        "theta": {"MASE": 0.52, "sMAPE": 0.95}
+      }
+    },
+    {
+      "series_id": "seasonal_001",
+      "length": 240,
+      "frequency": "D",
+      "seasonal_strength": 0.82,
+      "trend_strength": 0.10,
+      "noise_level": 0.08,
+      "best_model": "chronos",
+      "model_scores": {
+        "chronos": 0.91,
+        "timesfm": 0.85,
+        "moirai": 0.79,
+        "lag_llama": 0.83,
+        "ttm": 0.80
+      },
+      "metrics": {
+        "chronos": {"MASE": 0.38, "sMAPE": 0.72},
+        "timesfm": {"MASE": 0.45, "sMAPE": 0.85},
+        "moirai": {"MASE": 0.52, "sMAPE": 0.98}
+      }
+    },
+    {
+      "series_id": "noisy_001",
+      "length": 150,
+      "frequency": "h",
+      "seasonal_strength": 0.15,
+      "trend_strength": 0.05,
+      "noise_level": 0.65,
+      "best_model": "lag_llama",
+      "model_scores": {
+        "chronos": 0.55,
+        "timesfm": 0.60,
+        "moirai": 0.52,
+        "lag_llama": 0.68,
+        "ttm": 0.50
+      },
+      "metrics": {
+        "lag_llama": {"MASE": 1.20, "sMAPE": 2.45},
+        "chronos": {"MASE": 1.45, "sMAPE": 2.85}
+      }
+    },
+    {
+      "series_id": "hourly_complex_001",
+      "length": 500,
+      "frequency": "h",
+      "seasonal_strength": 0.65,
+      "trend_strength": 0.30,
+      "noise_level": 0.20,
+      "best_model": "timesfm",
+      "model_scores": {
+        "chronos": 0.75,
+        "timesfm": 0.88,
+        "moirai": 0.70,
+        "lag_llama": 0.72,
+        "ttm": 0.65
+      },
+      "metrics": {
+        "timesfm": {"MASE": 0.55, "sMAPE": 1.02},
+        "chronos": {"MASE": 0.62, "sMAPE": 1.15}
+      }
+    },
+    {
+      "series_id": "weekly_trend_001",
+      "length": 104,
+      "frequency": "W",
+      "seasonal_strength": 0.30,
+      "trend_strength": 0.70,
+      "noise_level": 0.15,
+      "best_model": "theta",
+      "model_scores": {
+        "chronos": 0.65,
+        "timesfm": 0.70,
+        "moirai": 0.62,
+        "lag_llama": 0.68,
+        "ttm": 0.60
+      },
+      "metrics": {
+        "theta": {"MASE": 0.60, "sMAPE": 1.10},
+        "timesfm": {"MASE": 0.68, "sMAPE": 1.25}
+      }
+    },
+    {
+      "series_id": "random_walk_001",
+      "length": 100,
+      "frequency": "D",
+      "seasonal_strength": 0.02,
+      "trend_strength": 0.15,
+      "noise_level": 0.85,
+      "best_model": "ttm",
+      "model_scores": {
+        "chronos": 0.58,
+        "timesfm": 0.62,
+        "moirai": 0.55,
+        "lag_llama": 0.60,
+        "ttm": 0.70
+      },
+      "metrics": {
+        "ttm": {"MASE": 1.05, "sMAPE": 2.10},
+        "naive": {"MASE": 1.15, "sMAPE": 2.25}
+      }
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,46 @@
+\begin{table}[t]
+\centering
+\caption{UniTSFM benchmark results across 7 Monash datasets and 5 TSFMs.}
+\label{tab:benchmark}
+\begin{tabular}{llccccc}
+\toprule
+Dataset & Metric & chronos & lag_llama & moirai & timesfm & ttm \\
+\midrule
+electricity & MASE & \textbf{0.560} & 0.894 & 0.719 & 0.584 & 0.858 \\
+electricity & sMAPE & \textbf{22.314} & 36.185 & 29.278 & 27.805 & 32.544 \\
+electricity & CRPS & \textbf{3.098} & 5.527 & 4.256 & 3.132 & 4.951 \\
+electricity & RMSE & 5.309 & 7.730 & 6.336 & \textbf{5.302} & 7.610 \\
+electricity & MAE & 4.017 & 5.995 & 5.004 & \textbf{3.989} & 5.867 \\
+exchange_rate & MASE & 12.383 & 92.222 & 21.651 & \textbf{2.984} & 6.271 \\
+exchange_rate & sMAPE & 2.623 & 17.461 & 4.492 & \textbf{0.628} & 1.340 \\
+exchange_rate & CRPS & 226.603 & 1568.552 & 394.886 & \textbf{56.678} & 179.264 \\
+exchange_rate & RMSE & 403.879 & 2534.636 & 673.355 & \textbf{116.040} & 237.153 \\
+exchange_rate & MAE & 309.190 & 2340.375 & 545.765 & \textbf{76.054} & 157.649 \\
+influenza & MASE & 1.351 & 2.515 & 1.255 & \textbf{1.172} & 1.640 \\
+influenza & sMAPE & 11.756 & 22.171 & 11.126 & \textbf{10.264} & 14.112 \\
+influenza & CRPS & 20.174 & 33.981 & 14.932 & \textbf{14.329} & 23.306 \\
+influenza & RMSE & 26.591 & 47.999 & 25.405 & \textbf{23.318} & 32.300 \\
+influenza & MAE & 22.323 & 42.608 & 20.591 & \textbf{19.253} & 27.396 \\
+m4_hourly & MASE & \textbf{0.594} & 1.493 & 0.608 & 0.612 & 0.742 \\
+m4_hourly & sMAPE & \textbf{3.024} & 7.801 & 3.159 & 3.107 & 3.845 \\
+m4_hourly & CRPS & 33.877 & 91.776 & 39.644 & \textbf{32.679} & 50.655 \\
+m4_hourly & RMSE & 58.671 & 145.088 & \textbf{54.626} & 56.173 & 84.405 \\
+m4_hourly & MAE & 49.539 & 125.318 & \textbf{46.080} & 46.653 & 73.398 \\
+solar & MASE & 0.155 & 0.214 & 0.996 & \textbf{0.076} & 0.287 \\
+solar & sMAPE & \textbf{200.000} & \textbf{200.000} & \textbf{200.000} & \textbf{200.000} & \textbf{200.000} \\
+solar & CRPS & 0.206 & 0.184 & 0.903 & \textbf{0.056} & 0.288 \\
+solar & RMSE & 0.202 & 0.208 & 1.541 & \textbf{0.114} & 0.372 \\
+solar & MAE & 0.185 & 0.167 & 0.932 & \textbf{0.090} & 0.296 \\
+traffic & MASE & 0.455 & 0.468 & 0.509 & \textbf{0.331} & 0.351 \\
+traffic & sMAPE & 19.104 & 19.912 & 15.114 & \textbf{11.313} & 14.700 \\
+traffic & CRPS & 0.006 & 0.007 & 0.005 & \textbf{0.003} & 0.004 \\
+traffic & RMSE & 0.011 & 0.010 & 0.014 & 0.009 & \textbf{0.007} \\
+traffic & MAE & 0.007 & 0.007 & 0.007 & \textbf{0.005} & 0.005 \\
+weather & MASE & 1.780 & 1.000 & 1.749 & \textbf{0.928} & 1.379 \\
+weather & sMAPE & \textbf{169.435} & 191.034 & 175.140 & 196.157 & 169.518 \\
+weather & CRPS & 3.465 & 2.537 & 4.508 & \textbf{2.474} & 3.489 \\
+weather & RMSE & 6.597 & 6.753 & 9.011 & 6.877 & \textbf{6.477} \\
+weather & MAE & 4.585 & 2.601 & 4.530 & \textbf{2.423} & 3.551 \\
+\bottomrule
+\end{tabular}
+\end{table}

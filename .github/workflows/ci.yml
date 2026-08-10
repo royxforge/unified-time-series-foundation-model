@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tooling
+        run: pip install --quiet ruff black mypy
+      - name: Lint (ruff)
+        run: ruff check uniftsm/ tests/ benchmarks/
+      - name: Format (black)
+        run: black --check uniftsm/ tests/ benchmarks/
+      - name: Typecheck (mypy)
+        run: mypy uniftsm/
+
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package (dev extras)
+        run: pip install --quiet -e ".[dev]"
+      - name: Run test suite
+        run: pytest -q
+      - name: CI-safe mock benchmark
+        run: python benchmarks/run_mock_benchmark.py
+      - name: Synthetic benchmark (no model downloads)
+        run: python benchmarks/synthetic_benchmark.py --quick
