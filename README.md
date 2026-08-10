@@ -419,11 +419,6 @@ lower, upper = model.predict_interval(horizon=48, alpha=0.1)   # 80% intervals
 - [Production Drift Detection](https://github.com/royxforge/production-drift-detection) - The uncertainty signals UniTSFM exposes per horizon (CRPS, quantile spread, sample dispersion) are the same population-level drift signals tracked in production monitoring. A forecast model wrapped by UniTSFM feeds directly into that drift pipeline.
 - [Unsupervised Confidence Estimation](https://github.com/royxforge/unsupervised-confidence-estimation) - The per-horizon confidence calibration in UniTSFM's uncertainty-weighted ensemble shares methodology with the unsupervised confidence metric developed there.
 - [Multi-Objective Feature Selection](https://github.com/royxforge/multi-objective-feature-selection) - The 15 meta-features UniTSFM uses for model selection are a forecasting-specific analog of the feature economy question studied there: which inputs matter, and which can be discarded.
-- [Loss Landscape Analysis](https://github.com/royxforge/loss-landscape-analysis) - The differentiable patch-gating in `AdaptivePatcher` is a natural subject for the gradient and landscape analysis techniques from that work.
-- [RAG Evaluation Framework](https://github.com/royxforge/rag-evaluation-framework) - The evaluation harness philosophy (rigorous metrics, significance testing, reproducible artifacts) is shared; UniTSFM applies it to forecasting instead of retrieval.
-- [Parameter-Efficient Fine-Tuning](https://github.com/royxforge/parameter-efficient-fine-tuning) - For users fine-tuning TSFMs on domain data, UniTSFM provides the unified evaluation harness to measure whether PEFT gains transfer across models.
-- [Multi-Agent Research System](https://github.com/royxforge/multi-agent-research-system) - UniTSFM's benchmark automation (datasets -> models -> reports) is the single-agent version of the orchestration studied there.
-- [Multimodal Medical VQA](https://github.com/royxforge/multimodal-medical-vqa) - The calibrated-confidence design pattern (temperature scaling, uncertainty flagging) maps onto UniTSFM's forecast-interval construction for high-stakes domains like clinical time series.
 
 ---
 
