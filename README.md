@@ -260,7 +260,7 @@ tests/                       # 336 unit tests
 ## Installation
 
 ```bash
-git clone https://github.com/royxforge/uniftsm.git
+git clone https://github.com/royxforge/unified-time-series-foundation-model.git
 cd uniftsm
 
 python -m venv .venv
@@ -429,7 +429,7 @@ lower, upper = model.predict_interval(horizon=48, alpha=0.1)   # 80% intervals
   author = {Roy, Sourav},
   title  = {UniTSFM: Unified Time Series Foundation Model Toolkit},
   year   = {2026},
-  url    = {https://github.com/royxforge/uniftsm}
+  url    = {https://github.com/royxforge/unified-time-series-foundation-model}
 }
 ```
 
