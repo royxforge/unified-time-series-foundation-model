@@ -15,6 +15,7 @@ import pandas as pd
 import torch
 
 from uniftsm.core.exceptions import ModelNotLoadedError
+from uniftsm.pipeline.frequency import FrequencyDetector
 
 logger = logging.getLogger(__name__)
 
@@ -258,12 +259,28 @@ class BaseForecaster(ABC):
         last_date = y.index[-1]
         if freq is None:
             return pd.date_range(start=last_date, periods=horizon, freq="D")
-        offset = pd.tseries.frequencies.to_offset(freq)
+        # Normalize frequency for pandas 3.0 compatibility
+        canonical_freq = FrequencyDetector._normalize(freq)
+        if canonical_freq is None:
+            # Fallback to daily if normalization fails
+            return pd.date_range(start=last_date, periods=horizon, freq="D")
+        # Convert canonical form to pandas 3.0 compatible form
+        pandas_freq = self._to_pandas_compatible_freq(canonical_freq)
+        offset = pd.tseries.frequencies.to_offset(pandas_freq)
         return pd.date_range(
             start=last_date + offset,
             periods=horizon,
             freq=offset,
         )
+
+    @staticmethod
+    def _to_pandas_compatible_freq(freq: str) -> str:
+        """Convert canonical frequency to pandas 3.0 compatible form."""
+        # pandas 3.0 requires lowercase for hour/minute/second
+        for upper, lower in [("H", "h"), ("T", "min"), ("M", "m"), ("S", "s")]:
+            if upper in freq and lower not in freq:
+                freq = freq.replace(upper, lower)
+        return freq
 
     def __repr__(self) -> str:
         return (

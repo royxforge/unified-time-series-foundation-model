@@ -164,7 +164,7 @@ class TestFrequencyEdgeCases:
 
         idx = pd.date_range("2020-01-01", periods=10, freq="h")
         freq = FrequencyDetector.detect(pd.Series(np.arange(10.0), index=idx))
-        assert freq == "h"
+        assert freq == "H"
 
     def test_non_datetime_index_raises(self):
         from uniftsm.pipeline.frequency import FrequencyResampler

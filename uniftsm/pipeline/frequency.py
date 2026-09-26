@@ -96,19 +96,23 @@ class FrequencyDetector:
         ``"w"`` / ``"m"`` / ``"y"``).  Returns ``None`` for strings
         that are not valid pandas frequencies.
         """
+        # pandas 3.0 requires lowercase for hour/minute/second
+        # For validation, we need to convert to pandas 3.0 compatible form:
+        # - "H" -> "h", "T" -> "min", "M" -> "m", "S" -> "s"
+        test_freq = freq
+        for upper, lower in [("H", "h"), ("T", "min"), ("M", "m"), ("S", "s")]:
+            if upper in test_freq and lower not in test_freq:
+                test_freq = test_freq.replace(upper, lower)
+        
         try:
-            pd.tseries.frequencies.to_offset(freq)
+            pd.tseries.frequencies.to_offset(test_freq)
         except ValueError:
             return None
 
-        # ``pd.infer_freq`` returns aliases that pandas accepts as offsets
-        # but that break downstream consumers (``pd.Timedelta(unit=...)``
-        # rejects multiplier units like "10min"; lowercase ``w``/``y`` are
-        # deprecated by pandas 2.2+).  Normalise to canonical aliases.
-        # Note: ``infer_freq`` only ever emits well-formed uppercase
-        # strings (e.g. "W-SUN", "2H"), so the ``replace`` calls below
-        # cannot corrupt an anchored weekday suffix.
-        return freq.replace("min", "T").replace("w", "W").replace("y", "Y")
+# Return canonical uppercase form for backward compatibility.
+        # Callers that need pandas 3.0 compatible form should convert themselves.
+        normalized = test_freq.replace("min", "T").replace("h", "H").replace("w", "W").replace("m", "M").replace("y", "Y").replace("s", "S")
+        return normalized
 
     @staticmethod
     def describe(freq: str) -> str:
