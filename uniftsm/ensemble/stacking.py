@@ -10,7 +10,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 
 from uniftsm.core.exceptions import EnsembleError
@@ -41,7 +41,9 @@ class StackingEnsemble(BaseEnsemble):
         name: str | None = None,
     ) -> None:
         super().__init__(models, name=name)
-        self._meta_model = meta_model or LinearRegression()
+        # Ridge (regularised) with a small default alpha: plain OLS overfits
+        # the tiny backtest design matrix when models >> holdout points.
+        self._meta_model = meta_model or Ridge(alpha=1.0)
         self._scaler = StandardScaler()
         self._is_trained = False
 
@@ -51,14 +53,23 @@ class StackingEnsemble(BaseEnsemble):
         horizon: int,
         **kwargs: Any,
     ) -> StackingEnsemble:
-        """Train the meta-learner on a validation set.
+        """Train the meta-learner on a holdout window (no leakage).
 
-        For each model, generate forecasts on the training series, then
-        use those forecasts as features to predict the true values.
+        Splits ``y_train`` into fit ``[:-horizon]`` / holdout ``[-horizon:]``:
+        each member forecasts the holdout from history only, then the
+        meta-learner maps those out-of-sample forecasts to the realised
+        holdout values.
+
+        The previous implementation trained member→target on the *same*
+        window (fitting member forecasts of ``y_train`` to ``y_train``
+        itself), which leaks future information into the meta-model.
+
+        Requires ``len(y_train) >= 2 * horizon`` so the member-fit window is
+        at least as long as the horizon it must forecast.
 
         Args:
-            y_train: The actual (held-out) target values for the training
-                window.
+            y_train: Full history. The last ``horizon`` points form the
+                holdout that the meta-learner is trained on.
             horizon: Forecast horizon used during training.
             **kwargs: Forwarded to each model's ``predict`` method.
 
@@ -67,22 +78,52 @@ class StackingEnsemble(BaseEnsemble):
         """
         n_models = len(self.models)
 
-        # Collect predictions from each model
-        used_len = min(len(y_train), horizon)
+        if isinstance(y_train, pd.Series):
+            history_vals = y_train.iloc[:-horizon]
+            holdout_vals = y_train.iloc[-horizon:]
+        else:
+            history_vals = y_train.iloc[:-horizon] if hasattr(y_train, "iloc") else y_train[:-horizon]
+            holdout_vals = y_train.iloc[-horizon:] if hasattr(y_train, "iloc") else y_train[-horizon:]
+
+        if len(history_vals) < horizon:
+            raise EnsembleError(
+                self.name,
+                f"Need at least 2*horizon={2 * horizon} history points for "
+                f"leakage-free stacking training, got {len(y_train)}.",
+            )
+
+        # Refit each member on history-only, then forecast the holdout window.
+        # Members that fail are dropped for this training round.
+        y_holdout = np.asarray(holdout_vals).ravel()
+        used_len = len(y_holdout)
         X_stack = np.zeros((used_len, n_models))
+        active: list[int] = []
         for i, model in enumerate(self.models):
-            pred = model.predict(horizon, return_quantiles=False, **kwargs)
-            X_stack[:, i] = pred["mean"].values[:used_len]
+            try:
+                fitted = model.fit(history_vals)
+                pred = fitted.predict(horizon, return_quantiles=False, **kwargs)
+                X_stack[:, i] = pred["mean"].values[:used_len]
+                active.append(i)
+            except Exception as exc:
+                import logging
+
+                logging.getLogger(__name__).warning(
+                    "Stacking member '%s' failed during training and was skipped: %s",
+                    getattr(model, "model_name", type(model).__name__),
+                    exc,
+                )
+
+        if not active:
+            raise EnsembleError(
+                self.name,
+                "No ensemble member could produce a training forecast.",
+            )
 
         # Scale features
         X_scaled = self._scaler.fit_transform(X_stack)
 
-        # Fit meta-model on matching number of targets
-        if isinstance(y_train, pd.Series):
-            y_vals = y_train.iloc[:used_len].values
-        else:
-            y_vals = y_train.values[:used_len].ravel()
-        self._meta_model.fit(X_scaled, y_vals)
+        # Fit meta-model on the realised holdout values
+        self._meta_model.fit(X_scaled, y_holdout)
         self._is_trained = True
         return self
 

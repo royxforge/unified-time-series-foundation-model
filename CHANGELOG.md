@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Uncertainty-weighted ensemble** combines the *array* forms of predictions/variances for the law-of-total-variance terms; the previous code multiplied the raw Python lists and broke for `horizon > 1`.
+- **Stacking ensemble trains without leakage**: `train()` refits members on `y_train[:-horizon]`, forecasts the held-out `[-horizon:]` window from history only, and fits the meta-learner on those out-of-sample forecasts (previously member forecasts of the training window were fitted to the same window's values). Requires `len(y_train) >= 2 * horizon` (raises `EnsembleError` otherwise); the default meta-learner is now `Ridge(alpha=1.0)` (regularised for the small design matrix).
+
 ### Added
 - Unified API wrapping 5 Time Series Foundation Models (Chronos, TimesFM, MOIRAI, Lag-Llama, TinyTimeMixers)
 - `BaseForecaster` abstract base class with `fit()` / `predict()` interface

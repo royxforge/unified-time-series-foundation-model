@@ -113,9 +113,11 @@ class UncertaintyWeightedEnsemble(BaseEnsemble):
         # Weighted average
         ensemble_mean = (weights * predictions_arr).sum(axis=0)
 
-        # Combined uncertainty (law of total variance)
-        within_var = (weights * variances).sum(axis=0)
-        between_var = (weights * (predictions - ensemble_mean[None, :]) ** 2).sum(axis=0)
+        # Combined uncertainty (law of total variance). Use the array forms:
+        # mixing lists (predictions=medians, variances=vectors) with arrays
+        # breaks broadcasting whenever horizon > 1.
+        within_var = (weights * variances_arr).sum(axis=0)
+        between_var = (weights * (predictions_arr - ensemble_mean[None, :]) ** 2).sum(axis=0)
         ensemble_std = np.sqrt(within_var + between_var)
 
         forecast_index = pd.RangeIndex(horizon)
