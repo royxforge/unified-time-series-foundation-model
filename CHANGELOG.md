@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-26
+
 ### Fixed
 
 - **Uncertainty-weighted ensemble** combines the *array* forms of predictions/variances for the law-of-total-variance terms; the previous code multiplied the raw Python lists and broke for `horizon > 1`.

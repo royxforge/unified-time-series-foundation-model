@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name = "uniftsm"
-version = "0.1.0"
+version = "0.2.0""
 description = "Unified Time Series Foundation Model Toolkit: 5 TSFMs, 1 API"
 readme = "README.md"
 license = {text = "MIT"}
@@ -145,7 +145,7 @@ ignore = [
 known-first-party = ["uniftsm"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "0.2.0""
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true
