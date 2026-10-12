@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import click
 
+from uniftsm import __version__
 from uniftsm.cli.benchmark import benchmark
 from uniftsm.cli.compare import compare
 from uniftsm.cli.forecast import forecast
@@ -19,7 +20,7 @@ from uniftsm.cli.serve import serve
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="uniftsm")
+@click.version_option(version=__version__, prog_name="uniftsm")
 @click.option("--verbose", "-v", is_flag=True, help="Increase verbosity.")
 def cli(verbose: bool) -> None:
     """UniTSFM — Unified Time Series Foundation Model Toolkit.

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Packaging metadata**: `pyproject.toml` had a malformed `version = "0.2.0""` line (stray quote) and `[tool.mypy] python_version` had been overwritten with the package version; both are corrected so the file parses.
+- **Version consistency**: `uniftsm.__version__` reported `0.1.0` and the CLI hard-coded `--version` to `0.1.0`; both now report the released `0.2.0` (the CLI reads the package `__version__`).
+
 ## [0.2.0] - 2026-09-26
 
 ### Fixed
