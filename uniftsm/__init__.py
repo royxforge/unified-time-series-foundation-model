@@ -63,4 +63,4 @@ __all__ = [
 # NOTE: `_models` is intentionally excluded from ``__all__``: it is
 # imported purely for its registration side effect.
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

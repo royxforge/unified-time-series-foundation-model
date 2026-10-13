@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-13
+
+### Added
+
+- **`forecast --format table|csv|json`**: `uniftsm forecast` could only print a rendered table, so calling it from a script or pipeline meant scraping text. `--format json` now prints a well-formed payload (`model`, `horizon`, `freq`, `context_length`, and the quantile columns keyed by name against a shared `index`) and nothing else on stdout, so it can be piped straight into `jq`; `--format csv` emits the forecast frame as CSV; `--format table` remains the default. `--output` follows the selected format (a `.json` payload or a CSV), and progress lines are routed to stderr in the machine-readable modes so they cannot be mistaken for forecast values. Missing values (`NaN`, `NaT`) serialise as `null` rather than the invalid bare `NaN` token `json.dumps` would emit, and an unknown format is rejected by the CLI before any model is loaded.
+
 ### Fixed
 
 - **Packaging metadata**: `pyproject.toml` had a malformed `version = "0.2.0""` line (stray quote) and `[tool.mypy] python_version` had been overwritten with the package version; both are corrected so the file parses.

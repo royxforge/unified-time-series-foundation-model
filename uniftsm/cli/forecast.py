@@ -2,10 +2,61 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
 
 import click
 import pandas as pd
+
+
+def _json_scalar(value: Any) -> Any:
+    """Convert a single pandas/numpy value into a JSON-serialisable scalar.
+
+    Timestamps become ISO-8601 strings, numpy scalars become Python scalars,
+    and missing values become ``null`` (``json.dumps`` would otherwise emit the
+    invalid ``NaN`` token).
+    """
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        try:
+            if pd.isna(value):
+                return None
+        except (TypeError, ValueError):
+            pass
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+    if hasattr(value, "item"):
+        return value.item()
+    return value
+
+
+def _forecast_payload(
+    output_df: pd.DataFrame,
+    *,
+    model: str,
+    horizon: int,
+    freq: str | None,
+    context_length: int,
+) -> dict[str, Any]:
+    """Build a machine-readable forecast payload.
+
+    Quantile columns keep their names (e.g. ``q_0.5``) and each series is
+    emitted alongside the shared forecast index, so consumers can align the
+    values with their timestamps without parsing a rendered table.
+    """
+    return {
+        "model": model,
+        "horizon": horizon,
+        "freq": freq,
+        "context_length": context_length,
+        "index": [_json_scalar(value) for value in output_df.index],
+        "forecasts": {
+            str(column): [_json_scalar(value) for value in output_df[column].tolist()]
+            for column in output_df.columns
+        },
+    }
 
 
 @click.command(name="forecast")
@@ -38,7 +89,15 @@ import pandas as pd
     "-o",
     default=None,
     type=click.Path(dir_okay=False),
-    help="Save forecast to CSV.",
+    help="Save the forecast to a file (format follows --format).",
+)
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["table", "csv", "json"]),
+    default="table",
+    show_default=True,
+    help="Render the forecast as a table, CSV, or JSON. 'json' prints only JSON so it can be piped.",
 )
 @click.option("--verbose", "-v", is_flag=True, default=False, help="Verbose output.")
 def forecast(
@@ -49,6 +108,7 @@ def forecast(
     target_col: str | None,
     freq: str | None,
     output: str | None,
+    output_format: str,
     verbose: bool,
 ) -> None:
     """Generate forecasts for time series data from DATA_PATH (CSV).
@@ -58,6 +118,8 @@ def forecast(
         uniftsm forecast data.csv --horizon 90 --model chronos
 
         uniftsm forecast data.csv --horizon 168 --model auto --ensemble
+
+        uniftsm forecast data.csv --format json | jq '.forecasts'
     """
     import logging
 
@@ -81,6 +143,7 @@ def forecast(
     logger.info("Loaded series with %d observations.", len(y))
 
     # Select / initialise model
+    selected_model_name = model
     if ensemble:
         logger.info("Using uncertainty-weighted ensemble of all available models.")
         from uniftsm.core.base import BaseForecaster
@@ -99,9 +162,11 @@ def forecast(
                 logger.warning("  Failed to load model '%s': %s", model_name, exc)
 
         if not models:
-            logger.error("No models could be loaded. Exiting.")
-            return
+            # A non-zero exit is required here: callers pipeline this command,
+            # and silently succeeding with no output looks like a valid result.
+            raise click.ClickException("No models could be loaded for the ensemble.")
 
+        selected_model_name = "ensemble"
         forecaster: BaseForecaster | UncertaintyWeightedEnsemble = UncertaintyWeightedEnsemble(
             models
         )
@@ -119,10 +184,10 @@ def forecast(
             top_k=1,
         )
         if not suggestions:
-            logger.error("No suitable model found.")
-            return
+            raise click.ClickException("No suitable model found for automatic selection.")
         best_model_name = suggestions[0][0]
         logger.info("Auto-selected model: %s (score=%.3f)", best_model_name, suggestions[0][1])
+        selected_model_name = best_model_name
         model_cls = registry.get(best_model_name)
         forecaster = model_cls(device="auto")
         forecaster.fit(y, freq=freq)
@@ -144,13 +209,34 @@ def forecast(
         index=next(iter(forecast_df.values())).index,
     )
 
-    # Print
-    click.echo(output_df.to_string())
+    payload = None
+    if output_format == "json":
+        payload = _forecast_payload(
+            output_df,
+            model=selected_model_name,
+            horizon=horizon,
+            freq=freq,
+            context_length=len(y),
+        )
+
+    # Print — machine-readable modes emit only the data so stdout stays pipeable.
+    machine_readable = output_format in {"json", "csv"}
+    if output_format == "json":
+        click.echo(json.dumps(payload, indent=2))
+    elif output_format == "csv":
+        click.echo(output_df.to_csv(), nl=False)
+    else:
+        click.echo(output_df.to_string())
 
     # Save
     if output:
         output_path = Path(output)
-        output_df.to_csv(output_path)
-        click.echo(f"\nForecast saved to {output_path.resolve()}")
+        if output_format == "json":
+            output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        else:
+            output_df.to_csv(output_path)
+        # Log lines go to stderr in machine-readable modes so they cannot be
+        # mistaken for forecast values by a downstream parser.
+        click.echo(f"Forecast saved to {output_path.resolve()}", err=machine_readable)
 
     logger.info("Forecast complete.")

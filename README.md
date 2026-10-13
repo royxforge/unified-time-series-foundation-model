@@ -309,6 +309,10 @@ print(upper.head())
 uniftsm forecast data.csv --horizon 90 --model chronos
 uniftsm forecast data.csv --horizon 168 --model auto --ensemble
 
+# Machine-readable output for scripts and pipelines
+uniftsm forecast data.csv --horizon 24 --format json | jq '.forecasts'
+uniftsm forecast data.csv --horizon 24 --format csv --output forecast.csv
+
 # Benchmark
 uniftsm benchmark --datasets m4_hourly,electricity --models chronos,timesfm
 
