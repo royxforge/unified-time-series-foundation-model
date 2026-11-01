@@ -103,15 +103,22 @@ class FrequencyDetector:
         for upper, lower in [("H", "h"), ("T", "min"), ("M", "m"), ("S", "s")]:
             if upper in test_freq and lower not in test_freq:
                 test_freq = test_freq.replace(upper, lower)
-        
+
         try:
             pd.tseries.frequencies.to_offset(test_freq)
         except ValueError:
             return None
 
-# Return canonical uppercase form for backward compatibility.
+        # Return canonical uppercase form for backward compatibility.
         # Callers that need pandas 3.0 compatible form should convert themselves.
-        normalized = test_freq.replace("min", "T").replace("h", "H").replace("w", "W").replace("m", "M").replace("y", "Y").replace("s", "S")
+        normalized = (
+            test_freq.replace("min", "T")
+            .replace("h", "H")
+            .replace("w", "W")
+            .replace("m", "M")
+            .replace("y", "Y")
+            .replace("s", "S")
+        )
         return normalized
 
     @staticmethod

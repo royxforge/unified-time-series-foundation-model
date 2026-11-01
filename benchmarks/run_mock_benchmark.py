@@ -6,17 +6,16 @@ Uses MockForecaster to validate the benchmarking infrastructure.
 from __future__ import annotations
 
 import json
-import sys
 import time
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-# Add project root to path so conftest is importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tests"))
-
-from conftest import MockForecaster
+try:  # package import: `python -m benchmarks.run_mock_benchmark`, pytest, editable install
+    from benchmarks.mock_forecaster import MockForecaster
+except ModuleNotFoundError:  # run directly: `python benchmarks/run_mock_benchmark.py`
+    from mock_forecaster import MockForecaster
 
 RESULTS_DIR = Path(__file__).parent / "results"
 

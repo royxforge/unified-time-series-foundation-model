@@ -9,10 +9,15 @@
   <img src="https://img.shields.io/badge/MOIRAI-Small-f59e0b?style=flat-square" />
   <img src="https://img.shields.io/badge/Lag--Llama-Base-ef4444?style=flat-square" />
   <img src="https://img.shields.io/badge/TTM-Small-8b5cf6?style=flat-square" />
+  <a href="https://github.com/royxforge/uniftsm/actions/workflows/ci.yml"><img src="https://github.com/royxforge/uniftsm/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <img src="https://img.shields.io/badge/License-MIT-6366f1?style=flat-square" />
 </p>
 
-> A research-grade toolkit that unifies five time series foundation models (Chronos, TimesFM, MOIRAI, Lag-Llama, TTM) behind a single API, with meta-learned model selection, uncertainty-weighted ensembling, and rigorous evaluation. Every claim in this README is backed by reproducible benchmark results shipped in-repo and runnable on CPU.
+> **Chronos, TimesFM, MOIRAI, Lag-Llama and TTM behind one `fit`/`predict` interface with a shared evaluation harness, so comparing them is a config change instead of five rewrites.** Adds meta-learned model selection and uncertainty-weighted ensembling across architectures that return completely different output types. Every number in this README comes from the committed benchmark CSV, and the CPU mock benchmark reruns in CI.
+>
+> **Result:** on the committed M4-hourly series T1, TTM leads at **0.4621 MASE** against Chronos 0.5639 and Lag-Llama 1.4006 — a 3× spread that a single-model README would have hidden.
+>
+> **Try it on CPU, no downloads:** `python benchmarks/run_mock_benchmark.py`
 
 ---
 
@@ -260,7 +265,7 @@ tests/                       # 336 unit tests
 ## Installation
 
 ```bash
-git clone https://github.com/royxforge/unified-time-series-foundation-model.git
+git clone https://github.com/royxforge/uniftsm.git
 cd uniftsm
 
 python -m venv .venv
@@ -433,7 +438,7 @@ lower, upper = model.predict_interval(horizon=48, alpha=0.1)   # 80% intervals
   author = {Roy, Sourav},
   title  = {UniTSFM: Unified Time Series Foundation Model Toolkit},
   year   = {2026},
-  url    = {https://github.com/royxforge/unified-time-series-foundation-model}
+  url    = {https://github.com/royxforge/uniftsm}
 }
 ```
 

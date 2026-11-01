@@ -138,7 +138,7 @@ def nmae(
     y_true = np.asarray(y_true, dtype=np.float64).ravel()
     y_pred = np.asarray(y_pred, dtype=np.float64).ravel()
     y_insample = np.asarray(y_insample, dtype=np.float64).ravel()
-    scale = np.mean(np.abs(y_insample))
+    scale = float(np.mean(np.abs(y_insample)))
     if scale < 1e-8:
         scale = 1.0
     return float(np.mean(np.abs(y_true - y_pred)) / scale)

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Lint, format and type checks were failing on the tree CI runs them against**: `ruff check uniftsm/ tests/ benchmarks/` reported 5 findings (unsorted test imports after the `importlib` workaround, a blank line with trailing whitespace), `black --check` wanted to reformat 3 files, and `mypy uniftsm/` reported one error — `nmae()` assigned `np.float64` to a `float`-inferred variable before the `if scale < 1e-8` guard reassigned it. The test file now imports `Path` instead of calling `open(...).read()`, the CLI helper test uses a context-free `Path.read_text`, and the three jobs pass locally.
+
 ## [0.3.0] - 2026-10-13
 
 ### Added

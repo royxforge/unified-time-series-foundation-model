@@ -82,8 +82,12 @@ class StackingEnsemble(BaseEnsemble):
             history_vals = y_train.iloc[:-horizon]
             holdout_vals = y_train.iloc[-horizon:]
         else:
-            history_vals = y_train.iloc[:-horizon] if hasattr(y_train, "iloc") else y_train[:-horizon]
-            holdout_vals = y_train.iloc[-horizon:] if hasattr(y_train, "iloc") else y_train[-horizon:]
+            history_vals = (
+                y_train.iloc[:-horizon] if hasattr(y_train, "iloc") else y_train[:-horizon]
+            )
+            holdout_vals = (
+                y_train.iloc[-horizon:] if hasattr(y_train, "iloc") else y_train[-horizon:]
+            )
 
         if len(history_vals) < horizon:
             raise EnsembleError(

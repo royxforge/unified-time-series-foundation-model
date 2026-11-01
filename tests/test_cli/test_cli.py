@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
@@ -17,8 +18,12 @@ forecast_module = importlib.import_module("uniftsm.cli.forecast")
 # ``uniftsm.core.registry`` is likewise shadowed by the singleton instance.
 registry_module = importlib.import_module("uniftsm.core.registry")
 
-from uniftsm.cli.main import cli
-from tests.conftest import MockForecaster
+# Imported after the importlib calls above on purpose: both are resolved first
+# so the shadowed modules are bound before the package's Click entry point is
+# imported. Hence the E402 suppression.
+from tests.conftest import MockForecaster  # noqa: E402
+
+from uniftsm.cli.main import cli  # noqa: E402
 
 
 class TestCLIHelp:
@@ -125,9 +130,7 @@ class TestForecastOutputFormats:
         with runner.isolated_filesystem():
             with open("test_data.csv", "w") as handle:
                 handle.write("date,value\n")
-            return runner.invoke(
-                cli, ["forecast", "test_data.csv", "--horizon", "4", *extra]
-            )
+            return runner.invoke(cli, ["forecast", "test_data.csv", "--horizon", "4", *extra])
 
     def test_json_format_emits_only_valid_json(self, forecast_env):
         result = self._run(CliRunner(), "--format", "json")
@@ -161,7 +164,7 @@ class TestForecastOutputFormats:
                 ],
             )
             assert result.exit_code == 0, result.output
-            payload = json.loads(open("fc.json", encoding="utf-8").read())
+            payload = json.loads(Path("fc.json").read_text(encoding="utf-8"))
             assert payload["horizon"] == 4
             # Status chatter must not contaminate the piped JSON payload.
             assert result.stdout.startswith("{")
